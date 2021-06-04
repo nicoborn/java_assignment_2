@@ -3,8 +3,12 @@ package java_assignment_2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class Test {
 
@@ -40,8 +44,7 @@ public class Test {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.toString());
 		}
 		reader.close();
 		
@@ -57,7 +60,58 @@ public class Test {
 		    System.out.println("XDR / CHF: " + dataEntry.getXDRCHF());
 		    System.out.println("");
 		}
-	    
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		
+		// Create SQLite DB and add entries
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);
+			
+			statement.executeUpdate("drop table if exists forexdata");
+			statement.executeUpdate("create table forexdata (id integer, dataDate string, eurchf float, gbpchf float, usdchf float, jpychf float, audchf float, xdrchf float)");
+			
+			// Add data from ArrayList to database
+			int i = 0; // ID
+			for (Data dataEntry : data) {
+				statement.executeUpdate("insert into forexdata values(" + i + ", '" + dataEntry.getDate() + "', " + dataEntry.getEURCHF() + ", " + dataEntry.getGBPCHF() + ", " + dataEntry.getUSDCHF() + ", " + dataEntry.getJPYCHF() + ", " + dataEntry.getAUDCHF() + ", " + dataEntry.getXDRCHF() +")");                              
+				i++;
+			}
+			
+			// Print report header
+			System.out.println("HISTORICAL DATA: 1.- SWISS FRANC COMPARED TO OTHER CURRENCIES");
+			System.out.println("DATA SOURCE: Bundesamt für Statisik / Schweizer Nationalbank");
+			System.out.println("URL: https://data.snb.ch/");
+			System.out.println("");
+			System.out.println("-------------------------------------------------------------");
+			System.out.println("COLUMNS COUNT: 7");
+			System.out.println("COLUMNS: DATE, EURCHF, GBPCHF, USDCHF, JPYCHF, AUDCHF, XDRCHF");
+			System.out.println("ENTRIES COUNT: " + data.size());
+			System.out.println("");
+			System.out.println("-------------------------------------------------------------");
+			// Read data from the database
+			ResultSet rs = statement.executeQuery("select min(dataDate), max(dataDate), min(eurchf), max(eurchf), avg(eurchf), min(gbpchf), max(gbpchf), avg(gbpchf), min(usdchf), max(usdchf), avg(usdchf), min(jpychf), max(jpychf), avg(jpychf), min(audchf), max(audchf), avg(audchf), min(xdrchf),max(xdrchf), avg(xdrchf) from forexdata");
+			while(rs.next()) {
+				// Read results in DB
+				System.out.println("FOREX Pair Breakdown:");
+				System.out.println("Time period: From " + rs.getString("min(dataDate)") + " to " + rs.getString("max(dataDate)"));
+				System.out.println("");
+				System.out.println("EUR / CHF breakdown: " + "Average (" + rs.getFloat("avg(eurchf)") + ")" + " | Min (" + rs.getFloat("min(eurchf)") + ")" + " | Max (" + rs.getFloat("max(eurchf)") + ")");
+				System.out.println("GBP / CHF breakdown: " + "Average (" + rs.getFloat("avg(gbpchf)") + ")" + " | Min (" + rs.getFloat("min(gbpchf)") + ")" + " | Max (" + rs.getFloat("max(gbpchf)") + ")");
+				System.out.println("USD / CHF breakdown: " + "Average (" + rs.getFloat("avg(usdchf)") + ")" + " | Min (" + rs.getFloat("min(usdchf)") + ")" + " | Max (" + rs.getFloat("max(usdchf)") + ")");
+				System.out.println("JPY / CHF breakdown: " + "Average (" + rs.getFloat("avg(jpychf)") + ")" + " | Min (" + rs.getFloat("min(jpychf)") + ")" + " | Max (" + rs.getFloat("max(jpychf)") + ")");
+				System.out.println("AUD / CHF breakdown: " + "Average (" + rs.getFloat("avg(audchf)") + ")" + " | Min (" + rs.getFloat("min(audchf)") + ")" + " | Max (" + rs.getFloat("max(audchf)") + ")");
+				System.out.println("XDR / CHF breakdown: " + "Average (" + rs.getFloat("avg(xdrchf)") + ")" + " | Min (" + rs.getFloat("min(xdrchf)") + ")" + " | Max (" + rs.getFloat("max(xdrchf)") + ")");
+			}
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		}
+		
 	}
 
 }
