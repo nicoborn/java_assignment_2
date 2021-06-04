@@ -29,13 +29,13 @@ public class Test {
 					// Split line and set attributes
 					String[] line = row.split(";");
 					Data dataEntry = new Data();
-					dataEntry.setDate(line[0]);
-				    dataEntry.setEURCHF(Float.parseFloat(line[1]));
-				    dataEntry.setGBPCHF(Float.parseFloat(line[2]));
-				    dataEntry.setUSDCHF(Float.parseFloat(line[3]));
-				    dataEntry.setJPYCHF(Float.parseFloat(line[4]));
-				    dataEntry.setAUDCHF(Float.parseFloat(line[5]));
-				    dataEntry.setXDRCHF(Float.parseFloat(line[6]));
+					dataEntry.setDate(line[0]); 						// Date
+				    dataEntry.setEURCHF(Float.parseFloat(line[1]));		// EURCHF
+				    dataEntry.setGBPCHF(Float.parseFloat(line[2]));		// GBPCHF
+				    dataEntry.setUSDCHF(Float.parseFloat(line[3]));		// USDCHF
+				    dataEntry.setJPYCHF(Float.parseFloat(line[4]));		// JPYCHF
+				    dataEntry.setAUDCHF(Float.parseFloat(line[5]));		// AUDCHF
+				    dataEntry.setXDRCHF(Float.parseFloat(line[6]));		// XDRCHF
 				    
 				    // Add created object to ArrayList
 				    data.add(dataEntry);
@@ -66,10 +66,11 @@ public class Test {
 		System.out.println("");
 		System.out.println("");
 		
-		// Create SQLite DB and add entries
+		// Create SQLite DB and add entries, then show report
 		Connection connection = null;
 		try {
-			connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+			// Create connection
+			connection = DriverManager.getConnection("jdbc:sqlite:data.db");
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);
 			
