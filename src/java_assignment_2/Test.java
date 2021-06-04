@@ -11,6 +11,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Test {
+	
+	// Java Assignment 2
+	// Authors: Nico Born, Marco Marchese
 
 	public static void main(String[] args) throws IOException {
 		
@@ -102,12 +105,12 @@ public class Test {
 				System.out.println("FOREX Pair Breakdown:");
 				System.out.println("Time period: From " + rs.getString("min(dataDate)") + " to " + rs.getString("max(dataDate)"));
 				System.out.println("");
-				System.out.println("EUR / CHF breakdown: " + "Average (" + rs.getFloat("avg(eurchf)") + ")" + " | Min (" + rs.getFloat("min(eurchf)") + ")" + " | Max (" + rs.getFloat("max(eurchf)") + ")");
-				System.out.println("GBP / CHF breakdown: " + "Average (" + rs.getFloat("avg(gbpchf)") + ")" + " | Min (" + rs.getFloat("min(gbpchf)") + ")" + " | Max (" + rs.getFloat("max(gbpchf)") + ")");
-				System.out.println("USD / CHF breakdown: " + "Average (" + rs.getFloat("avg(usdchf)") + ")" + " | Min (" + rs.getFloat("min(usdchf)") + ")" + " | Max (" + rs.getFloat("max(usdchf)") + ")");
-				System.out.println("JPY / CHF breakdown: " + "Average (" + rs.getFloat("avg(jpychf)") + ")" + " | Min (" + rs.getFloat("min(jpychf)") + ")" + " | Max (" + rs.getFloat("max(jpychf)") + ")");
-				System.out.println("AUD / CHF breakdown: " + "Average (" + rs.getFloat("avg(audchf)") + ")" + " | Min (" + rs.getFloat("min(audchf)") + ")" + " | Max (" + rs.getFloat("max(audchf)") + ")");
-				System.out.println("XDR / CHF breakdown: " + "Average (" + rs.getFloat("avg(xdrchf)") + ")" + " | Min (" + rs.getFloat("min(xdrchf)") + ")" + " | Max (" + rs.getFloat("max(xdrchf)") + ")");
+				System.out.println("EUR / CHF: " + "Average (" + rs.getFloat("avg(eurchf)") + ")" + " | Min (" + rs.getFloat("min(eurchf)") + ")" + " | Max (" + rs.getFloat("max(eurchf)") + ")");
+				System.out.println("GBP / CHF: " + "Average (" + rs.getFloat("avg(gbpchf)") + ")" + " | Min (" + rs.getFloat("min(gbpchf)") + ")" + " | Max (" + rs.getFloat("max(gbpchf)") + ")");
+				System.out.println("USD / CHF: " + "Average (" + rs.getFloat("avg(usdchf)") + ")" + " | Min (" + rs.getFloat("min(usdchf)") + ")" + " | Max (" + rs.getFloat("max(usdchf)") + ")");
+				System.out.println("JPY / CHF: " + "Average (" + rs.getFloat("avg(jpychf)") + ")" + " | Min (" + rs.getFloat("min(jpychf)") + ")" + " | Max (" + rs.getFloat("max(jpychf)") + ")");
+				System.out.println("AUD / CHF: " + "Average (" + rs.getFloat("avg(audchf)") + ")" + " | Min (" + rs.getFloat("min(audchf)") + ")" + " | Max (" + rs.getFloat("max(audchf)") + ")");
+				System.out.println("XDR / CHF: " + "Average (" + rs.getFloat("avg(xdrchf)") + ")" + " | Min (" + rs.getFloat("min(xdrchf)") + ")" + " | Max (" + rs.getFloat("max(xdrchf)") + ")");
 			}
 		} catch (SQLException e) {
 			System.out.println(e.toString());
