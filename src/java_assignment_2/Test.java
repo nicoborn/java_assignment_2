@@ -3,11 +3,13 @@ package java_assignment_2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Test {
@@ -22,6 +24,7 @@ public class Test {
 		
 		// Use BufferedReader to read CSV
 		boolean isHeaderLine = true;
+		int testNumberOfLines = 0;
 		BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "\\data.csv"));
 		try {
 			while ((row = reader.readLine()) != null) {
@@ -42,6 +45,9 @@ public class Test {
 				    
 				    // Add created object to ArrayList
 				    data.add(dataEntry);
+				    
+				    // Number of lines read
+				    testNumberOfLines++;
 				} else {
 					isHeaderLine = false;
 				}
@@ -51,19 +57,15 @@ public class Test {
 		}
 		reader.close();
 		
-		// Test data
-		for (Data dataEntry : data) {
-			System.out.println("Forex entry:");
-		    System.out.println("Date: " + dataEntry.getDate());
-		    System.out.println("EUR / CHF: " + dataEntry.getEURCHF());
-		    System.out.println("GBP / CHF: " + dataEntry.getGBPCHF());
-		    System.out.println("USD / CHF: " + dataEntry.getUSDCHF());
-		    System.out.println("JPY / CHF: " + dataEntry.getJPYCHF());
-		    System.out.println("AUD / CHF: " + dataEntry.getAUDCHF());
-		    System.out.println("XDR / CHF: " + dataEntry.getXDRCHF());
-		    System.out.println("");
-		}
+		// Test data and compare number of objects and number of entries in the csv
 		System.out.println("");
+		System.out.println("Testing number of entries and objects:");
+		System.out.println("--------------------------------------");
+		if(data.size() == testNumberOfLines) {
+			System.out.println("OK! Correct number of entries created");
+		} else {
+			System.out.println("NOK! Something went wrong. Number of objects are not the same as the number of entries in the csv.");
+		}
 		System.out.println("");
 		System.out.println("");
 		System.out.println("");
@@ -98,7 +100,9 @@ public class Test {
 			System.out.println("ENTRIES COUNT: " + data.size());
 			System.out.println("");
 			System.out.println("-------------------------------------------------------------");
-			// Read data from the database
+			
+			// Read data from the database and create report
+			float avgEURCHF = 0, avgGBPCHF = 0, avgUSDCHF = 0, avgJPYCHF = 0, avgAUDCHF = 0, avgXDRCHF = 0;
 			ResultSet rs = statement.executeQuery("select min(dataDate), max(dataDate), min(eurchf), max(eurchf), avg(eurchf), min(gbpchf), max(gbpchf), avg(gbpchf), min(usdchf), max(usdchf), avg(usdchf), min(jpychf), max(jpychf), avg(jpychf), min(audchf), max(audchf), avg(audchf), min(xdrchf),max(xdrchf), avg(xdrchf) from forexdata");
 			while(rs.next()) {
 				// Read results in DB
@@ -111,7 +115,92 @@ public class Test {
 				System.out.println("JPY / CHF: " + "Average (" + rs.getFloat("avg(jpychf)") + ")" + " | Min (" + rs.getFloat("min(jpychf)") + ")" + " | Max (" + rs.getFloat("max(jpychf)") + ")");
 				System.out.println("AUD / CHF: " + "Average (" + rs.getFloat("avg(audchf)") + ")" + " | Min (" + rs.getFloat("min(audchf)") + ")" + " | Max (" + rs.getFloat("max(audchf)") + ")");
 				System.out.println("XDR / CHF: " + "Average (" + rs.getFloat("avg(xdrchf)") + ")" + " | Min (" + rs.getFloat("min(xdrchf)") + ")" + " | Max (" + rs.getFloat("max(xdrchf)") + ")");
+				avgEURCHF = rs.getFloat("avg(eurchf)");
+				avgGBPCHF = rs.getFloat("avg(gbpchf)");
+				avgUSDCHF = rs.getFloat("avg(usdchf)");
+				avgJPYCHF = rs.getFloat("avg(jpychf)");
+				avgAUDCHF = rs.getFloat("avg(audchf)");
+				avgXDRCHF = rs.getFloat("avg(xdrchf)");
 			}
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			
+			// Testing DB entries
+			ResultSet rsTesting = statement.executeQuery("select count(*) from forexdata");
+			int testNumberOfDatabaseEntries = 0;
+			if(rs.next()) {
+				testNumberOfDatabaseEntries = rsTesting.getInt("count(*)");
+			}
+			System.out.println("");
+			System.out.println("Testing number of entries and database entries:");
+			System.out.println("--------------------------------------");
+			if(data.size() == testNumberOfDatabaseEntries) {
+				System.out.println("OK! Correct number of entries in the database");
+			} else {
+				System.out.println("NOK! Something went wrong. Number of database entries are not the same as the number of entries in the file.");
+			}
+			System.out.println("");
+			System.out.println("Testing the data:");
+			System.out.println("--------------------------------------");
+			float sumEURCHF = 0, sumGBPCHF = 0, sumUSDCHF = 0, sumJPYCHF = 0, sumAUDCHF = 0, sumXDRCHF = 0;
+			for (Data dataEntry : data) {
+				sumEURCHF += dataEntry.getEURCHF();
+				sumGBPCHF += dataEntry.getGBPCHF();
+				sumUSDCHF += dataEntry.getUSDCHF();
+				sumJPYCHF += dataEntry.getJPYCHF();
+				sumAUDCHF += dataEntry.getAUDCHF();
+				sumXDRCHF += dataEntry.getXDRCHF();
+			}
+			
+			// Compare SQL and Java calculated values
+			float avgCalculatedEURCHF = sumEURCHF / testNumberOfLines;
+			float avgCalculatedGBPCHF = sumGBPCHF / testNumberOfLines;
+			float avgCalculatedUSDCHF = sumUSDCHF / testNumberOfLines;
+			float avgCalculatedJPYCHF = sumJPYCHF / testNumberOfLines;
+			float avgCalculatedAUDCHF = sumAUDCHF / testNumberOfLines;
+			float avgCalculatedXDRCHF = sumXDRCHF / testNumberOfLines;
+			
+			DecimalFormat df = new DecimalFormat("#.####");
+			df.setRoundingMode(RoundingMode.CEILING);
+			
+			if(df.format(avgCalculatedEURCHF).equals(df.format(avgEURCHF))) {
+				System.out.println("EURCHF correct!" + " DB entry: " + df.format(avgEURCHF) + " | Java calculation: " + df.format(avgCalculatedEURCHF));
+			} else {
+				System.out.println("EURCHF incorrect!" + " DB entry: " + df.format(avgEURCHF) + " | Java calculation: " + df.format(avgCalculatedEURCHF));
+			}
+			
+			if(df.format(avgCalculatedGBPCHF).equals(df.format(avgGBPCHF))) {
+				System.out.println("GBPCHF correct!" + " DB entry: " + df.format(avgGBPCHF) + " | Java calculation: " + df.format(avgCalculatedGBPCHF));
+			} else {
+				System.out.println("GBPCHF incorrect!" + " DB entry: " + df.format(avgGBPCHF) + " | Java calculation: " + df.format(avgCalculatedGBPCHF));
+			}
+			
+			if(df.format(avgCalculatedUSDCHF).equals(df.format(avgUSDCHF))) {
+				System.out.println("USDCHF correct!" + " DB entry: " + df.format(avgUSDCHF) + " | Java calculation: " + df.format(avgCalculatedUSDCHF));
+			} else {
+				System.out.println("USDCHF incorrect!" + " DB entry: " + df.format(avgUSDCHF) + " | Java calculation: " + df.format(avgCalculatedUSDCHF));
+			}
+			
+			if(df.format(avgCalculatedJPYCHF).equals(df.format(avgJPYCHF))) {
+				System.out.println("JPYCHF correct!" + " DB entry: " + df.format(avgJPYCHF) + " | Java calculation: " + df.format(avgCalculatedJPYCHF));
+			} else {
+				System.out.println("JPYCHF incorrect!" + " DB entry: " + df.format(avgJPYCHF) + " | Java calculation: " + df.format(avgCalculatedJPYCHF));
+			}
+			
+			if(df.format(avgCalculatedAUDCHF).equals(df.format(avgAUDCHF))) {
+				System.out.println("AUDCHF correct!" + " DB entry: " + df.format(avgAUDCHF) + " | Java calculation: " + df.format(avgCalculatedAUDCHF));
+			} else {
+				System.out.println("AUDCHF incorrect!" + " DB entry: " + df.format(avgAUDCHF) + " | Java calculation: " + df.format(avgCalculatedAUDCHF));
+			}
+			
+			if(df.format(avgCalculatedXDRCHF).equals(df.format(avgXDRCHF))) {
+				System.out.println("XDRCHF correct!" + " DB entry: " + df.format(avgXDRCHF) + " | Java calculation: " + df.format(avgCalculatedXDRCHF));
+			} else {
+				System.out.println("XDRCHF incorrect!" + " DB entry: " + df.format(avgXDRCHF) + " | Java calculation: " + df.format(avgCalculatedXDRCHF));
+			}
+			
 		} catch (SQLException e) {
 			System.out.println(e.toString());
 		}
